@@ -1,2 +1,1 @@
-My first Django expeirence.
-More to come
+Django Library Project
