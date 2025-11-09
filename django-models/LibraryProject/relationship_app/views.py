@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.detail import DetailView
 # Imports for permissions
-from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.decorators import permission_required 
+from django.contrib.auth.decorators import user_passes_test
 # Imports for Form handling
 from django.forms import ModelForm
 # Imports for Auth and Models
 from .models import Library, Book, UserProfile
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-
 
 # --- Existing Application Views ---
 
