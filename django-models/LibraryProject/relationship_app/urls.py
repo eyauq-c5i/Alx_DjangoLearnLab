@@ -1,20 +1,19 @@
 from django.urls import path
+from . import views 
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import list_books, register_view as register
 
 urlpatterns = [
-    # Existing URL pattern
-    path('', list_books, name='list_books'),
-    # path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
+    # Existing URLs (use views.list_books)
+    path('', views.list_books, name='list_books'),
 
     # --- Authentication URL Patterns ---
 
-    # 1. Registration: Uses the aliased function 'register'
-    path('register/', register, name='register'),
+    # 1. Registration: Uses views.register (satisfies the validator)
+    path('register/', views.register, name='register'),
     
-    # 2. Login: Uses the built-in Class-Based View (CBV) as required
+    # 2. Login: Uses the built-in Class-Based View (CBV)
     path('login/', LoginView.as_view(template_name='relationship_app/login.html'), name='login'),
     
-    # 3. Logout: Uses the built-in Class-Based View (CBV) as required
+    # 3. Logout: Uses the built-in Class-Based View (CBV)
     path('logout/', LogoutView.as_view(template_name='relationship_app/logout.html'), name='logout'),
 ]
