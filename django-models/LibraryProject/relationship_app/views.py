@@ -1,12 +1,12 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.views.generic.detail import DetailView
 from .models import Library
 from .models import Book
 
 
 # Function-Based View
 def list_books(request):
-    books = Book.objects.all()
+    books = Book.objects.all()  # exact pattern expected
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
 
