@@ -19,8 +19,8 @@ class LibraryDetailView(DetailView):
     context_object_name = 'library'
 
 
-# --- User Registration View (Renamed/Aliased to 'register') ---
-def register(request):
+# --- User Registration View (Original name: register_view) ---
+def register_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
