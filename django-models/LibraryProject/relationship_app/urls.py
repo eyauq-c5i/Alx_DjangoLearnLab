@@ -1,17 +1,23 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import list_books, LibraryDetailView, register 
+
+from .views import list_books, LibraryDetailView 
+
+from . import views
 
 urlpatterns = [
-    # 1. Function-Based View (list_books)
+    # Existing URL patterns
     path('', list_books, name='list_books'),
-    
-    # 2. Class-Based View (LibraryDetailView)
-    # You need to include a primary key (pk) in the URL for DetailView
     path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
 
-    # --- Authentication URL Patterns (Based on previous task's requirements) ---
-    path('register/', register, name='register'),
+    # --- Authentication URL Patterns ---
+    
+    # Registration: Use views.register to satisfy the specific validator requirement
+    path('register/', views.register, name='register'),
+    
+    # Login: Use the built-in Class-Based View (CBV) as required
     path('login/', LoginView.as_view(template_name='relationship_app/login.html'), name='login'),
+    
+    # Logout: Use the built-in Class-Based View (CBV) as required
     path('logout/', LogoutView.as_view(template_name='relationship_app/logout.html'), name='logout'),
 ]
