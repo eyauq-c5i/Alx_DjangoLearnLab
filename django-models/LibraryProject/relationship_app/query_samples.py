@@ -2,8 +2,8 @@
 import os
 import django
 
-# Configure Django environment (adjust 'django-models' if your project name is different)
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_models.settings')
+# NOTE: Replace 'django-models' with the name of your main project folder if it is different
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django-models.settings') 
 django.setup()
 
 from relationship_app.models import Author, Book, Library, Librarian
@@ -28,33 +28,51 @@ def setup_sample_data():
     library_central.books.add(book_hobbit, book_rings)
     
     # 4. Create Librarian (OneToOne relationship)
-    librarian_john, created = Librarian.objects.get_or_create(name='John Smith', library=library_central)
+    # The primary_key=True in the Librarian model means we must use create or get_or_create
+    # with the library instance passed.
+    librarian_john, created = Librarian.objects.get_or_create(library=library_central, defaults={'name': 'John Smith'})
     
     print("Sample data loaded successfully.")
     return author_tolkien, library_central
 
 def run_queries(author_tolkien, library_central):
+    """Executes the required queries."""
     print("\n--- Running Queries ---")
 
-    # 1. Query all books by a specific author (ForeignKey)
-    print("1. Books by Author:")
-    # Filter the Book model based on the Author model instance
-    tolkien_books = Book.objects.filter(author=author_tolkien)
+    # Query 1: Query all books by a specific author (ForeignKey)
+    print("1. Query all books by Author (J.R.R. Tolkien):")
+    tolkien_books = author_tolkien.books.all() 
+    
     for book in tolkien_books:
         print(f"  - {book.title}")
-
-    # 2. List all books in a library (ManyToManyField)
-    print("\n2. Books in Library:")
-    # Access the related books directly from the library instance
+    
+    # Query 2: List all books in a library (ManyToManyField)
+    print("\n2. List all books in a Library (City Central Library):")
+    
+    # Uses the default ManyToMany manager name: 'books'
     library_books = library_central.books.all()
+    
     for book in library_books:
         print(f"  - {book.title}")
 
-    # 3. Retrieve the librarian for a library (OneToOneField - Reverse Lookup)
-    print("\n3. Librarian for Library:")
-    # Use the reverse relationship name (librarian is the model name)
+    # Query 3: Retrieve the librarian for a library (OneToOneField)
+    print("\n3. Retrieve the Librarian for a Library:")
+    
+    # Uses the default OneToOne reverse manager name: 'librarian'
     try:
-        librarian = library_central.librarian 
-        print(f"  - Librarian Name: {librarian.name}")
+        librarian = library_central.librarian
+        print(f"  - Librarian: {librarian.name}")
     except Librarian.DoesNotExist:
-        print("  - Error: No Librarian found for this library.")
+        print("  - Error: Librarian not found.")
+
+
+if __name__ == '__main__':
+    # Clean up data to prevent integrity errors on rerun
+    Book.objects.all().delete()
+    Author.objects.all().delete()
+    Library.objects.all().delete()
+    Librarian.objects.all().delete()
+    
+    # Run setup and queries
+    author, library = setup_sample_data()
+    run_queries(author, library)
