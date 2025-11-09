@@ -1,14 +1,16 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 
-# --- Module Import for ALL APP VIEWS ---
+# 1. Explicit import for list_books and LibraryDetailView
+from .views import list_books, LibraryDetailView 
+
+# 2. Module import for views.register, views.add_book, etc.
 from . import views 
 
 urlpatterns = [
     # --- Existing Application URL patterns ---
-    # Use views.dot notation for everything
-    path('', views.list_books, name='list_books'),
-    path('library/<int:pk>/', views.LibraryDetailView.as_view(), name='library_detail'),
+    path('', list_books, name='list_books'),
+    path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
 
     # --- Authentication URL Patterns ---
     path('register/', views.register, name='register'), 
