@@ -4,7 +4,7 @@ from .models import Book, Library
 
 # Function-Based View
 def list_books(request):
-    books = Book.objects.all()  # <-- exact line the checker looks for
+    books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
 
