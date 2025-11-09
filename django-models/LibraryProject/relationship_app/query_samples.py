@@ -34,42 +34,27 @@ def setup_sample_data():
     return author_tolkien, library_central
 
 def run_queries(author_tolkien, library_central):
-    """Executes the required queries."""
     print("\n--- Running Queries ---")
 
-    # Query 1: Query all books by a specific author (ForeignKey)
-    print("1. Query all books by Author (J.R.R. Tolkien):")
+    # 1. Query all books by a specific author (ForeignKey)
+    print("1. Books by Author:")
+    # Filter the Book model based on the Author model instance
     tolkien_books = Book.objects.filter(author=author_tolkien)
-    # Alternatively: Book.objects.filter(author__name='J.R.R. Tolkien')
-    
     for book in tolkien_books:
         print(f"  - {book.title}")
-    
-    # Query 2: List all books in a library (ManyToManyField)
-    print("\n2. List all books in a Library (City Central Library):")
-    
+
+    # 2. List all books in a library (ManyToManyField)
+    print("\n2. Books in Library:")
+    # Access the related books directly from the library instance
     library_books = library_central.books.all()
-    
     for book in library_books:
         print(f"  - {book.title}")
 
-    # Query 3: Retrieve the librarian for a library (OneToOneField)
-    print("\n3. Retrieve the Librarian for a Library:")
-    
-    # Reverse lookup: Accesses the Librarian object attached via the OneToOne relationship
-    librarian = library_central.librarian
-    
-    print(f"  - Librarian: {librarian.name}")
-    print(f"  - Library: {librarian.library.name}")
-
-
-if __name__ == '__main__':
-    # Ensure tables are empty before running to avoid primary key conflicts
-    Book.objects.all().delete()
-    Author.objects.all().delete()
-    Library.objects.all().delete()
-    Librarian.objects.all().delete()
-    
-    # Run setup and queries
-    author, library = setup_sample_data()
-    run_queries(author, library)
+    # 3. Retrieve the librarian for a library (OneToOneField - Reverse Lookup)
+    print("\n3. Librarian for Library:")
+    # Use the reverse relationship name (librarian is the model name)
+    try:
+        librarian = library_central.librarian 
+        print(f"  - Librarian Name: {librarian.name}")
+    except Librarian.DoesNotExist:
+        print("  - Error: No Librarian found for this library.")
