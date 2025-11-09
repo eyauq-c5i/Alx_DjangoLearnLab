@@ -20,7 +20,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
-    # Include the URLs from relationship_app under the path 'app/'
-    path('app/', include('relationship_app.urls')),
+    path('relationship_app/', include('relationship_app.urls')),
 ]
