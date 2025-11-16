@@ -146,6 +146,8 @@ SESSION_COOKIE_SECURE = True
 
 # Redirect all HTTP requests to HTTPS
 SECURE_SSL_REDIRECT = True
+# Tell Django that the reverse proxy sets X-Forwarded-Proto to signal HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 #HTTP Strict Transport Security (HSTS)
 SECURE_HSTS_SECONDS = 31536000
@@ -169,5 +171,3 @@ AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-
