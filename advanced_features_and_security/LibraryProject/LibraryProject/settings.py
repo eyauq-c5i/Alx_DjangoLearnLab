@@ -131,20 +131,23 @@ LOGOUT_REDIRECT_URL = 'login'
 SECRET_KEY = 'django-insecure-+e!m8cv)p(=%azv6cd6=cp3b$yabf7*g8$+*3uwsa+sd5hx9j1'
 
 # SECURITY WARNING: Turn off debug in production
-DEBUG = False  # Always False in production
+DEBUG = False  
 
-ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']  # Add your domain(s)
+ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com'] 
 
 
 # Security Settings
-SECURE_BROWSER_XSS_FILTER = True          # Browser XSS filter
-SECURE_CONTENT_TYPE_NOSNIFF = True        # Prevent MIME type sniffing
-X_FRAME_OPTIONS = 'DENY'                  # Prevent clickjacking
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
 
-CSRF_COOKIE_SECURE = True                 # CSRF cookie over HTTPS only
-SESSION_COOKIE_SECURE = True              # Session cookie over HTTPS only
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
-# Optional: HTTP Strict Transport Security (HSTS)
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True
+
+#HTTP Strict Transport Security (HSTS)
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True

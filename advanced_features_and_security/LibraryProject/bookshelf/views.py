@@ -52,4 +52,3 @@ def example_form_view(request):
     else:
         form = ExampleForm()
     return render(request, 'form_example.html', {'form': form})
-
