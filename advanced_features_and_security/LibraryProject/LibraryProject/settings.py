@@ -127,7 +127,44 @@ LOGIN_REDIRECT_URL = 'list_books'
 LOGOUT_REDIRECT_URL = 'login'
 
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-+e!m8cv)p(=%azv6cd6=cp3b$yabf7*g8$+*3uwsa+sd5hx9j1'
+
+# SECURITY WARNING: Turn off debug in production
+DEBUG = False  # Always False in production
+
+ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']  # Add your domain(s)
+
+
+# Security Settings
+SECURE_BROWSER_XSS_FILTER = True          # Browser XSS filter
+SECURE_CONTENT_TYPE_NOSNIFF = True        # Prevent MIME type sniffing
+X_FRAME_OPTIONS = 'DENY'                  # Prevent clickjacking
+
+CSRF_COOKIE_SECURE = True                 # CSRF cookie over HTTPS only
+SESSION_COOKIE_SECURE = True              # Session cookie over HTTPS only
+
+# Optional: HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Content Security Policy (requires django-csp)
+INSTALLED_APPS += ['csp']
+MIDDLEWARE += ['csp.middleware.CSPMiddleware']
+
+CONTENT_SECURITY_POLICY = {
+    'DIRECTIVES': {
+        'default-src': ("'self'",),
+        'script-src': ("'self'",),
+        'style-src': ("'self'", "'unsafe-inline'"),
+        'img-src': ("'self'", "data:"),
+    }
+}
+
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
