@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Book
-from .forms import BookForm, ExampleForm
+from .forms import BookForm
+from .forms import ExampleForm
 
 # List Books (requires view permission)
 @permission_required('bookshelf.can_view', raise_exception=True)
@@ -51,3 +52,4 @@ def example_form_view(request):
     else:
         form = ExampleForm()
     return render(request, 'form_example.html', {'form': form})
+
