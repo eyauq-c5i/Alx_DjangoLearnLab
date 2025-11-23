@@ -26,7 +26,7 @@ class BookViewSet(viewsets.ModelViewSet):
     - partial_update (PATCH /books_all/<id>/)
     - destroy (DELETE /books_all/<id>/)
     """
-    queryset = Book.objects.all()   # ✅ required by checker
+    queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]  # Auth required for write, read allowed for all
 
