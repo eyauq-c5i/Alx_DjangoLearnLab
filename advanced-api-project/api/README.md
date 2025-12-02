@@ -17,3 +17,22 @@ Unauthenticated users:
 
 Authenticated users:
 - Can create, update, and delete books
+
+
+sql
+Filtering, Searching, and Ordering
+----------------------------------
+
+The BookListView API supports advanced query features:
+
+Filtering:
+- Filter by title, author, or publication_year.
+  Example: /api/books/?author=Rowling
+
+Search:
+- Full-text search on title and author.
+  Example: /api/books/?search=harry
+
+Ordering:
+- Order results by 'title' or 'publication_year'.
+  Example: /api/books/?ordering=-publication_year

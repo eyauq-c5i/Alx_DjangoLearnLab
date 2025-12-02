@@ -1,8 +1,12 @@
 from django.shortcuts import render
 
-
 from rest_framework import generics, permissions
 from rest_framework.exceptions import ValidationError
+
+# NEW imports for filtering / searching / ordering
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .models import Book
 from .serializers import BookSerializer
 
@@ -10,16 +14,37 @@ from .serializers import BookSerializer
 class BookListView(generics.ListAPIView):
     """
     List all books.
-    Custom behavior added in get_queryset() for filtering.
+    Includes filtering, searching, and ordering.
+    Custom filtering by ?year=YYYY also preserved.
     """
     serializer_class = BookSerializer
     permission_classes = [permissions.AllowAny]
 
-    def get_queryset(self):
-        # Step 3: Custom behavior (filter by year using ?year=YYYY)
-        queryset = Book.objects.all()
-        year = self.request.query_params.get('year')
+    # Step 1, 2, 3: Enable filtering, searching, ordering
+    filter_backends = [
+        DjangoFilterBackend,  # filtering
+        SearchFilter,         # searching
+        OrderingFilter        # ordering
+    ]
 
+    # Filtering options (Step 1)
+    filterset_fields = ['title', 'author', 'publication_year']
+
+    # Searching options (Step 2)
+    search_fields = ['title', 'author']
+
+    # Ordering options (Step 3)
+    ordering_fields = ['title', 'publication_year']
+    ordering = ['title']  # default ordering
+
+    def get_queryset(self):
+        """
+        Add custom year filtering logic while keeping DRF filters active.
+        """
+        queryset = Book.objects.all()
+
+        # Custom filter: ?year=YYYY
+        year = self.request.query_params.get('year')
         if year:
             queryset = queryset.filter(publication_year=year)
 
@@ -46,10 +71,10 @@ class BookCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Step 3: Custom save logic
+        # Custom save logic
         print(f"Creating book from user: {self.request.user}")
 
-        # Example: Additional validation rule
+        # Additional validation rule
         if serializer.validated_data["publication_year"] < 1500:
             raise ValidationError("Year must be 1500 or later.")
 
@@ -84,4 +109,3 @@ class BookDeleteView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         print(f"Deleting book: {instance.title}")
         instance.delete()
-
