@@ -84,12 +84,27 @@ class BookCreateView(generics.CreateAPIView):
 class BookUpdateView(generics.UpdateAPIView):
     """
     Update an existing book.
-    Custom behavior added in perform_update().
-    Only authenticated users can update.
+    Supports both:
+    - /books/<pk>/update/
+    - /books/update/?id=<pk>
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        """
+        Overrides default behavior so the view works with:
+        1. /books/<pk>/update/
+        2. /books/update/?id=#
+        """
+        # First try: query param (?id=)
+        book_id = self.request.query_params.get("id")
+        if book_id:
+            return Book.objects.get(pk=book_id)
+
+        # Fallback: DRF default behavior for /<pk>/update/
+        return super().get_object()
 
     def perform_update(self, serializer):
         print("A book is being updated!")
@@ -99,12 +114,25 @@ class BookUpdateView(generics.UpdateAPIView):
 class BookDeleteView(generics.DestroyAPIView):
     """
     Delete a book.
-    Custom behavior added in perform_destroy().
-    Only authenticated users can delete.
+    Supports both:
+    - /books/<pk>/delete/
+    - /books/delete/?id=<pk>
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        """
+        Allows deletion via:
+        1. /books/<pk>/delete/
+        2. /books/delete/?id=#
+        """
+        book_id = self.request.query_params.get("id")
+        if book_id:
+            return Book.objects.get(pk=book_id)
+
+        return super().get_object()
 
     def perform_destroy(self, instance):
         print(f"Deleting book: {instance.title}")
