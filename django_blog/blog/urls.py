@@ -22,30 +22,18 @@ urlpatterns = [
         name='logout'
     ),
 
-    # BLOG POST ROUTES
+    # POSTS
     path('', views.PostListView.as_view(), name='post_list'),
+
+    # Detail View also handles comment form submission (POST)
     path('post/<int:pk>/', views.PostDetailView.as_view(), name='post_detail'),
 
-    # Create
+    # Create Post
     path('post/new/', views.PostCreateView.as_view(), name='post_create'),
 
-    # Update
+    # Update Post
     path('post/<int:pk>/update/', views.PostUpdateView.as_view(), name='post_update'),
 
-    # Delete
+    # Delete Post
     path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),
-
-
-    # ------------------------------------
-    # COMMENT ROUTES
-    # ------------------------------------
-
-    # Create comment
-    path('post/<int:post_id>/comment/', views.comment_create, name='comment_create'),
-
-    # Update comment
-    path('comment/<int:pk>/edit/', views.CommentUpdateView.as_view(), name='comment_update'),
-
-    # Delete comment
-    path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment_delete'),
 ]

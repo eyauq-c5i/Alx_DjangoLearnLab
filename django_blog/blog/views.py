@@ -75,7 +75,7 @@ class PostListView(ListView):
 
 class PostDetailView(DetailView):
     model = Post
-    template_name = 'blog/post_details.html'   # UPDATED NAME
+    template_name = 'blog/post_details.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -112,7 +112,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
-    success_url = reverse_lazy('blog:post_list')   # FIXED NAME
+    success_url = reverse_lazy('blog:post_list')
 
     def test_func(self):
         post = self.get_object()
@@ -120,26 +120,22 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 # ------------------------------------
-# COMMENT FUNCTIONALITY
+# COMMENT FUNCTIONALITY (CLASS-BASED)
 # ------------------------------------
 
-@login_required
-def comment_create(request, post_id):
-    """Create a new comment on a post."""
-    post = get_object_or_404(Post, id=post_id)
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
 
-    if request.method == "POST":
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post
-            comment.author = request.user
-            comment.save()
-            messages.success(request, "Comment added successfully!")
-            return redirect(reverse('blog:post_detail', args=[post.pk]) + "#comments")
-        else:
-            messages.error(request, "Please correct the errors in your comment.")
-    return redirect('blog:post_detail', pk=post.pk)
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        messages.success(self.request, "Comment added successfully!")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('blog:post_detail', args=[self.object.post.pk]) + "#comments"
 
 
 class CommentAuthorRequiredMixin(UserPassesTestMixin):
