@@ -5,7 +5,9 @@ from . import views
 app_name = 'blog'
 
 urlpatterns = [
+    # ------------------------------------------
     # AUTH & PROFILE ROUTES
+    # ------------------------------------------
     path('register/', views.register, name='register'),
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
@@ -22,7 +24,9 @@ urlpatterns = [
         name='logout'
     ),
 
+    # ------------------------------------------
     # BLOG POST ROUTES
+    # ------------------------------------------
     path('', views.PostListView.as_view(), name='post_list'),
     path('post/<int:pk>/', views.PostDetailView.as_view(), name='post_detail'),
     path('post/new/', views.PostCreateView.as_view(), name='post_create'),
@@ -32,22 +36,16 @@ urlpatterns = [
     # ------------------------------------------
     # COMMENT ROUTES
     # ------------------------------------------
-
-    # Create a new comment for a post
     path(
         'post/<int:post_id>/comments/new/',
         views.CommentCreateView.as_view(),
         name='comment_create'
     ),
-
-    # Update a comment
     path(
         'comment/<int:pk>/update/',
         views.CommentUpdateView.as_view(),
         name='comment_update'
     ),
-
-    # Delete a comment
     path(
         'comment/<int:pk>/delete/',
         views.CommentDeleteView.as_view(),
@@ -55,21 +53,17 @@ urlpatterns = [
     ),
 
     # ------------------------------------------
-    # TAGGING ROUTES
+    # TAGGING ROUTES (FIXED)
     # ------------------------------------------
-
-    # View posts by tag
     path(
-        'tags/<str:tag_name>/',
-        views.TagPostListView.as_view(),
-        name='tag_posts'
+        'tags/<slug:tag_slug>/',
+        views.PostByTagListView.as_view(),
+        name='posts_by_tag'
     ),
 
     # ------------------------------------------
     # SEARCH ROUTE
     # ------------------------------------------
-
-    # Search results
     path(
         'search/',
         views.SearchResultsView.as_view(),
