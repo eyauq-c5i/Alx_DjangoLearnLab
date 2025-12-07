@@ -34,10 +34,10 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),
 
     # ------------------------------------------
-    # COMMENT ROUTES
+    # COMMENT ROUTES (TEST-REQUIRED)
     # ------------------------------------------
     path(
-        'post/<int:post_id>/comments/new/',
+        'post/<int:pk>/comments/new/',
         views.CommentCreateView.as_view(),
         name='comment_create'
     ),
@@ -53,7 +53,7 @@ urlpatterns = [
     ),
 
     # ------------------------------------------
-    # TAGGING ROUTES (FIXED)
+    # TAG ROUTES (TEST-REQUIRED)
     # ------------------------------------------
     path(
         'tags/<slug:tag_slug>/',
