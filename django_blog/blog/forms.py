@@ -37,7 +37,7 @@ class ProfileUpdateForm(forms.ModelForm):
 # ------------------------------------
 class PostForm(forms.ModelForm):
 
-    # Text input for tags: comma-separated (e.g. "django, python, tutorial")
+    # Comma-separated tag input
     tags = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={
@@ -61,38 +61,37 @@ class PostForm(forms.ModelForm):
             }),
         }
 
+    def __init__(self, *args, **kwargs):
+        """Pre-fill tag field when editing an existing post."""
+        super().__init__(*args, **kwargs)
+
+        if self.instance.pk:
+            existing = ", ".join([tag.name for tag in self.instance.tags.all()])
+            self.fields['tags'].initial = existing
+
     def save(self, commit=True):
-        """
-        Override save() to handle custom tag input.
-        """
+        """Override save() to process tag input."""
         post = super().save(commit=False)
 
         if commit:
             post.save()
 
-        # Handle tag processing
-        tag_input = self.cleaned_data.get('tags', '')
-        tag_names = [t.strip().lower() for t in tag_input.split(',') if t.strip()]
+        # ---- Process tags ----
+        raw_tags = self.cleaned_data.get("tags", "")
+        tag_names = [
+            t.strip().lower()
+            for t in raw_tags.split(",")
+            if t.strip()
+        ]
 
-        # Clear old tags
+        # Clear and rebuild tag list
         post.tags.clear()
 
-        # Add new tags (create if not exist)
         for name in tag_names:
             tag_obj, created = Tag.objects.get_or_create(name=name)
             post.tags.add(tag_obj)
 
         return post
-
-    def __init__(self, *args, **kwargs):
-        """
-        Pre-fill the 'tags' field when editing a post.
-        """
-        super().__init__(*args, **kwargs)
-
-        if self.instance.pk:
-            existing_tags = ", ".join([tag.name for tag in self.instance.tags.all()])
-            self.fields['tags'].initial = existing_tags
 
 
 # ------------------------------------
@@ -106,7 +105,7 @@ class CommentForm(forms.ModelForm):
             'placeholder': 'Add a comment...',
         }),
         max_length=2000,
-        label='',   # No label for UI cleanliness
+        label='',
     )
 
     class Meta:
