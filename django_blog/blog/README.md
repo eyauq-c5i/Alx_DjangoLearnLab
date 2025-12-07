@@ -33,3 +33,8 @@ URLs
 Create comment: POST /posts/<post_id>/comments/new/ (login required)
 Edit comment: /comments/<comment_pk>/edit/ (author only)
 Delete comment: /comments/<comment_pk>/delete/ (author only)
+
+
+Adding tags: In the post create/edit form there’s a tags input. Enter comma-separated tag names. New tags are created automatically.
+Viewing posts by tag: Click a tag badge on a post or visit /tags/<tag_slug>/ to see posts with that tag.
+Search: Use the search box (site header) or /search/?q=keyword to find posts whose title, content, or tags contain keyword.

@@ -1,25 +1,54 @@
-{% extends 'base.html' %}
-{% block title %}{% if object %}Edit Post{% else %}New Post{% endif %}{% endblock %}
+{% extends 'blog/base.html' %}
+
+{% block title %}
+    {% if object %}Edit Post{% else %}New Post{% endif %}
+{% endblock %}
 
 {% block content %}
-<h1>{% if object %}Edit Post{% else %}New Post{% endif %}</h1>
+<div class="container mt-4">
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  <div class="mb-3">
-    {{ form.title.label_tag }}
-    {{ form.title }}
-    {{ form.title.errors }}
-  </div>
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3 class="mb-0">
+                {% if object %}Edit Post{% else %}Create New Post{% endif %}
+            </h3>
+        </div>
 
-  <div class="mb-3">
-    {{ form.content.label_tag }}
-    {{ form.content }}
-    {{ form.content.errors }}
-  </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
 
-  <button class="btn btn-primary" type="submit">{% if object %}Save changes{% else %}Create post{% endif %}</button>
-  <a class="btn btn-link" href="{% url 'blog:post_list' %}">Cancel</a>
-</form>
+                <!-- Non-field form errors (e.g., validation) -->
+                {{ form.non_field_errors }}
+
+                <!-- Title -->
+                <div class="mb-3">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    {% for error in form.title.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Content -->
+                <div class="mb-3">
+                    {{ form.content.label_tag }}
+                    {{ form.content }}
+                    {% for error in form.content.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <button class="btn btn-primary" type="submit">
+                    {% if object %}Save Changes{% else %}Create Post{% endif %}
+                </button>
+
+                <a class="btn btn-secondary ms-2" href="{% url 'blog:post_list' %}">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

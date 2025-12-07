@@ -7,12 +7,13 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
 )
+from django.db.models import Q
 
 from .forms import (
     UserRegisterForm, UserUpdateForm, ProfileUpdateForm,
     PostForm, CommentForm
 )
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 
 
 # ------------------------------------
@@ -82,6 +83,7 @@ class PostDetailView(DetailView):
         post = self.get_object()
         context['comment_form'] = CommentForm()
         context['comments'] = post.comments.all()
+        context['tags'] = post.tags.all()
         return context
 
 
@@ -92,7 +94,9 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        form.save_m2m()  # Save tags
+        return response
 
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -102,7 +106,9 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        form.save_m2m()  # Save updated tags
+        return response
 
     def test_func(self):
         post = self.get_object()
@@ -139,8 +145,6 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
 
 class CommentAuthorRequiredMixin(UserPassesTestMixin):
-    """Ensure only the comment author can edit/delete."""
-
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.author
@@ -167,3 +171,45 @@ class CommentDeleteView(LoginRequiredMixin, CommentAuthorRequiredMixin, DeleteVi
     def get_success_url(self):
         messages.success(self.request, "Comment deleted.")
         return reverse('blog:post_detail', args=[self.object.post.pk])
+
+
+# ------------------------------------
+# TAG FILTERING VIEW
+# ------------------------------------
+
+class TagPostListView(ListView):
+    model = Post
+    template_name = 'blog/tag_posts.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        self.tag = get_object_or_404(Tag, name=self.kwargs['tag_name'])
+        return self.tag.posts.order_by('-published_date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = self.tag
+        return context
+
+
+# ------------------------------------
+# SEARCH VIEW
+# ------------------------------------
+
+class SearchResultsView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        return Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        return context

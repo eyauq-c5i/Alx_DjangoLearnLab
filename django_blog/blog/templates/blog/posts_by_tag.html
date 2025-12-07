@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Posts tagged {{ tag.name }}{% endblock %}
+
+{% block content %}
+  <h2>Posts tagged "{{ tag.name }}"</h2>
+
+  {% if posts %}
+    <ul>
+      {% for post in posts %}
+        <li><a href="{% url 'blog:post_detail' post.pk %}">{{ post.title }}</a>
+         <small class="text-muted">• {{ post.published_date|date:"M d, Y" }}</small></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No posts with this tag yet.</p>
+  {% endif %}
+{% endblock %}

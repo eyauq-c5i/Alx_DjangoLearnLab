@@ -5,6 +5,19 @@ from django.db.models.signals import post_save
 
 
 # ------------------------------------
+#               TAG MODEL
+# ------------------------------------
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+# ------------------------------------
 #               POST MODEL
 # ------------------------------------
 class Post(models.Model):
@@ -12,6 +25,9 @@ class Post(models.Model):
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+
+    # NEW: Many-to-many relationship for tagging
+    tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
 
     def __str__(self):
         return self.title
@@ -48,7 +64,7 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["created_at"]  # Oldest first
+        ordering = ["created_at"]
         verbose_name_plural = "Comments"
 
     def __str__(self):

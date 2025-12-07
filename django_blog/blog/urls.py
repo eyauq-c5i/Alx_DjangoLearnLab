@@ -30,13 +30,13 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),
 
     # ------------------------------------------
-    # COMMENT ROUTES (REQUIRED BY TEST CHECKER)
+    # COMMENT ROUTES
     # ------------------------------------------
-    
+
     # Create a new comment for a post
     path(
-        'post/<int:pk>/comments/new/',
-        views.comment_create,
+        'post/<int:post_id>/comments/new/',
+        views.CommentCreateView.as_view(),
         name='comment_create'
     ),
 
@@ -52,5 +52,27 @@ urlpatterns = [
         'comment/<int:pk>/delete/',
         views.CommentDeleteView.as_view(),
         name='comment_delete'
+    ),
+
+    # ------------------------------------------
+    # TAGGING ROUTES
+    # ------------------------------------------
+
+    # View posts by tag
+    path(
+        'tags/<str:tag_name>/',
+        views.TagPostListView.as_view(),
+        name='tag_posts'
+    ),
+
+    # ------------------------------------------
+    # SEARCH ROUTE
+    # ------------------------------------------
+
+    # Search results
+    path(
+        'search/',
+        views.SearchResultsView.as_view(),
+        name='search_results'
     ),
 ]
