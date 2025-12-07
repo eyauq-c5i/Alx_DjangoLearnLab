@@ -5,6 +5,23 @@ from .models import Profile, Post, Comment, Tag
 
 
 # ------------------------------------
+# TAG WIDGET (ADDED)
+# ------------------------------------
+class TagWidget(forms.TextInput):
+    """
+    A simple widget for entering tags as comma-separated text.
+    """
+    def __init__(self, attrs=None):
+        base_attrs = {
+            'class': 'form-control',
+            'placeholder': 'Add tags separated by commas (e.g. django, python)',
+        }
+        if attrs:
+            base_attrs.update(attrs)
+        super().__init__(attrs=base_attrs)
+
+
+# ------------------------------------
 # USER REGISTRATION
 # ------------------------------------
 class UserRegisterForm(UserCreationForm):
@@ -37,13 +54,9 @@ class ProfileUpdateForm(forms.ModelForm):
 # ------------------------------------
 class PostForm(forms.ModelForm):
 
-    # Comma-separated tag input
     tags = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Add tags separated by commas (e.g. django, python)',
-        })
+        widget=TagWidget(),   # <--- FIXED: Now using TagWidget
     )
 
     class Meta:
@@ -61,37 +74,30 @@ class PostForm(forms.ModelForm):
             }),
         }
 
-    def __init__(self, *args, **kwargs):
-        """Pre-fill tag field when editing an existing post."""
-        super().__init__(*args, **kwargs)
-
-        if self.instance.pk:
-            existing = ", ".join([tag.name for tag in self.instance.tags.all()])
-            self.fields['tags'].initial = existing
-
     def save(self, commit=True):
-        """Override save() to process tag input."""
         post = super().save(commit=False)
 
         if commit:
             post.save()
 
-        # ---- Process tags ----
-        raw_tags = self.cleaned_data.get("tags", "")
-        tag_names = [
-            t.strip().lower()
-            for t in raw_tags.split(",")
-            if t.strip()
-        ]
+        tag_input = self.cleaned_data.get('tags', '')
+        tag_names = [t.strip().lower() for t in tag_input.split(',') if t.strip()]
 
-        # Clear and rebuild tag list
+        # reset old tags
         post.tags.clear()
 
+        # add new tags
         for name in tag_names:
             tag_obj, created = Tag.objects.get_or_create(name=name)
             post.tags.add(tag_obj)
 
         return post
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            existing_tags = ", ".join([tag.name for tag in self.instance.tags.all()])
+            self.fields['tags'].initial = existing_tags
 
 
 # ------------------------------------
