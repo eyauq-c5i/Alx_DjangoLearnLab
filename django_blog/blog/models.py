@@ -4,6 +4,9 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 
+# ------------------------------------
+#               POST MODEL
+# ------------------------------------
 class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
@@ -14,6 +17,9 @@ class Post(models.Model):
         return self.title
 
 
+# ------------------------------------
+#             PROFILE MODEL
+# ------------------------------------
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True)
@@ -24,9 +30,8 @@ class Profile(models.Model):
 
 
 # ------------------------------------
-#          COMMENT MODEL
+#             COMMENT MODEL
 # ------------------------------------
-
 class Comment(models.Model):
     post = models.ForeignKey(
         Post,
@@ -43,13 +48,16 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["created_at"]  # oldest first
+        ordering = ["created_at"]  # Oldest first
+        verbose_name_plural = "Comments"
 
     def __str__(self):
-        return f"Comment by {self.author.username} on {self.post.title}"
+        return f"{self.author.username} on '{self.post.title[:25]}'"
 
 
-# Automatically create or update Profile whenever a User is created/updated
+# ------------------------------------
+#     AUTO-CREATE / UPDATE PROFILE
+# ------------------------------------
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:

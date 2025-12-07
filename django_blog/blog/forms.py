@@ -46,7 +46,6 @@ class PostForm(forms.ModelForm):
 # ------------------------------------
 #          COMMENT FORM
 # ------------------------------------
-
 class CommentForm(forms.ModelForm):
     content = forms.CharField(
         widget=forms.Textarea(attrs={
@@ -55,7 +54,7 @@ class CommentForm(forms.ModelForm):
             'placeholder': 'Add a comment...',
         }),
         max_length=2000,
-        label=''
+        label='',   # No label for UI cleanliness
     )
 
     class Meta:
@@ -63,9 +62,11 @@ class CommentForm(forms.ModelForm):
         fields = ['content']
 
     def clean_content(self):
-        content = self.cleaned_data.get("content", "").strip()
+        content = (self.cleaned_data.get("content") or "").strip()
+
         if not content:
             raise forms.ValidationError("Comment cannot be empty.")
         if len(content) < 2:
             raise forms.ValidationError("Comment is too short.")
+
         return content

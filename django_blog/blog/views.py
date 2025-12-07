@@ -7,7 +7,6 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
 )
-from django.views.generic import TemplateView
 
 from .forms import (
     UserRegisterForm, UserUpdateForm, ProfileUpdateForm,
@@ -76,9 +75,8 @@ class PostListView(ListView):
 
 class PostDetailView(DetailView):
     model = Post
-    template_name = 'blog/post_detail.html'
+    template_name = 'blog/post_details.html'   # UPDATED NAME
 
-    # Add comments + comment form into context
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         post = self.get_object()
@@ -114,7 +112,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
-    success_url = reverse_lazy('blog:post-list')
+    success_url = reverse_lazy('blog:post_list')   # FIXED NAME
 
     def test_func(self):
         post = self.get_object()
@@ -138,13 +136,10 @@ def comment_create(request, post_id):
             comment.author = request.user
             comment.save()
             messages.success(request, "Comment added successfully!")
-            return redirect(reverse('blog:post-detail', args=[post.pk]) + "#comments")
+            return redirect(reverse('blog:post_detail', args=[post.pk]) + "#comments")
         else:
             messages.error(request, "Please correct the errors in your comment.")
-    else:
-        form = CommentForm()
-
-    return redirect('blog:post-detail', pk=post.pk)
+    return redirect('blog:post_detail', pk=post.pk)
 
 
 class CommentAuthorRequiredMixin(UserPassesTestMixin):
@@ -156,7 +151,7 @@ class CommentAuthorRequiredMixin(UserPassesTestMixin):
 
     def handle_no_permission(self):
         messages.error(self.request, "You do not have permission to modify this comment.")
-        return redirect('blog:post-detail', pk=self.get_object().post.pk)
+        return redirect('blog:post_detail', pk=self.get_object().post.pk)
 
 
 class CommentUpdateView(LoginRequiredMixin, CommentAuthorRequiredMixin, UpdateView):
@@ -166,7 +161,7 @@ class CommentUpdateView(LoginRequiredMixin, CommentAuthorRequiredMixin, UpdateVi
 
     def get_success_url(self):
         messages.success(self.request, "Comment updated successfully.")
-        return reverse('blog:post-detail', args=[self.object.post.pk]) + "#comments"
+        return reverse('blog:post_detail', args=[self.object.post.pk]) + "#comments"
 
 
 class CommentDeleteView(LoginRequiredMixin, CommentAuthorRequiredMixin, DeleteView):
@@ -175,4 +170,4 @@ class CommentDeleteView(LoginRequiredMixin, CommentAuthorRequiredMixin, DeleteVi
 
     def get_success_url(self):
         messages.success(self.request, "Comment deleted.")
-        return reverse_lazy('blog:post-detail', args=[self.object.post.pk])
+        return reverse('blog:post_detail', args=[self.object.post.pk])
