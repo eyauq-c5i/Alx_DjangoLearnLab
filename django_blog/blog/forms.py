@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Profile, Post
+from .models import Profile, Post, Comment
 
 
 class UserRegisterForm(UserCreationForm):
@@ -41,3 +41,31 @@ class PostForm(forms.ModelForm):
                 'rows': 5
             }),
         }
+
+
+# ------------------------------------
+#          COMMENT FORM
+# ------------------------------------
+
+class CommentForm(forms.ModelForm):
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'rows': 3,
+            'class': 'form-control',
+            'placeholder': 'Add a comment...',
+        }),
+        max_length=2000,
+        label=''
+    )
+
+    class Meta:
+        model = Comment
+        fields = ['content']
+
+    def clean_content(self):
+        content = self.cleaned_data.get("content", "").strip()
+        if not content:
+            raise forms.ValidationError("Comment cannot be empty.")
+        if len(content) < 2:
+            raise forms.ValidationError("Comment is too short.")
+        return content

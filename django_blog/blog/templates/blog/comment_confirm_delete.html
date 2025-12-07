@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Delete Comment</h2>
+  <p>Are you sure you want to delete this comment?</p>
+  <blockquote>
+    {{ object.content|linebreaks }}
+    <footer>— {{ object.author.get_full_name|default:object.author.username }}, {{ object.created_at|date:"F j, Y, g:i a" }}</footer>
+  </blockquote>
+  <form method="post">{% csrf_token %}
+    <button type="submit">Yes, delete</button>
+    <a href="{% url 'blog:post_detail' object.post.pk %}">Cancel</a>
+  </form>
+{% endblock %}
