@@ -15,17 +15,17 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='blog/logout.html'), name='logout'),
 
     # BLOG POST CRUD ROUTES
-    
+
     # List + Detail
-    path('', views.PostListView.as_view(), name='post-list'),
-    path('post/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
+    path('', views.PostListView.as_view(), name='post_list'),
+    path('post/<int:pk>/', views.PostDetailView.as_view(), name='post_detail'),
 
     # Create
-    path('post/new/', views.PostCreateView.as_view(), name='post-create'),
+    path('post/new/', views.PostCreateView.as_view(), name='post_create'),
 
-    # Update
-    path('post/<int:pk>/edit/', views.PostUpdateView.as_view(), name='post-edit'),
+    # Update (FIXED)
+    path('post/<int:pk>/update/', views.PostUpdateView.as_view(), name='post_update'),
 
     # Delete
-    path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
+    path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),
 ]
