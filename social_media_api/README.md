@@ -27,3 +27,25 @@ Custom User extends AbstractUser and includes:
 ## Authentication
 
 Token-based authentication using Django REST Framework.
+
+## Posts Endpoints
+
+GET /api/posts/
+POST /api/posts/
+GET /api/posts/{id}/
+PUT /api/posts/{id}/
+DELETE /api/posts/{id}/
+
+Supports pagination & search:
+GET /api/posts/?search=keyword
+
+## Comments Endpoints
+
+GET /api/comments/
+POST /api/comments/
+GET /api/comments/{id}/
+PUT /api/comments/{id}/
+DELETE /api/comments/{id}/
+
+## Authentication
+All endpoints require Token Authentication
