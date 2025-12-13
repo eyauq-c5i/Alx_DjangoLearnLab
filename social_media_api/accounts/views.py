@@ -1,21 +1,20 @@
 from django.shortcuts import render
 # Create your views here.
 from django.contrib.auth import get_user_model
-from rest_framework.views import APIView
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
 
-User = get_user_model()
+CustomUser = get_user_model()
 
 
-class FollowUserView(APIView):
-    permission_classes = [IsAuthenticated]
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = CustomUser.objects.all()
 
     def post(self, request, user_id):
         try:
-            user_to_follow = User.objects.get(id=user_id)
-        except User.DoesNotExist:
+            user_to_follow = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
             return Response(
                 {"detail": "User not found"},
                 status=status.HTTP_404_NOT_FOUND
@@ -34,13 +33,14 @@ class FollowUserView(APIView):
         )
 
 
-class UnfollowUserView(APIView):
-    permission_classes = [IsAuthenticated]
+class UnfollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = CustomUser.objects.all()
 
     def post(self, request, user_id):
         try:
-            user_to_unfollow = User.objects.get(id=user_id)
-        except User.DoesNotExist:
+            user_to_unfollow = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
             return Response(
                 {"detail": "User not found"},
                 status=status.HTTP_404_NOT_FOUND
