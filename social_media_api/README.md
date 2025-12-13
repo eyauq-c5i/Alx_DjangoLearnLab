@@ -49,3 +49,20 @@ DELETE /api/comments/{id}/
 
 ## Authentication
 All endpoints require Token Authentication
+
+## Follow System
+
+POST /api/accounts/follow/{user_id}/
+POST /api/accounts/unfollow/{user_id}/
+
+Users can follow and unfollow other users.
+Self-following is not allowed.
+
+## Feed Endpoint
+
+GET /api/feed/
+
+Returns posts created by users that the authenticated user follows.
+Posts are ordered by most recent first.
+
+Authentication required for all endpoints.

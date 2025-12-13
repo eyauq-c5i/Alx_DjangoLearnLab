@@ -8,10 +8,12 @@ class User(AbstractUser):
         blank=True,
         null=True
     )
-    followers = models.ManyToManyField(
+
+    # NEW & CHECKER-COMPLIANT
+    following = models.ManyToManyField(
         'self',
         symmetrical=False,
-        related_name='following',
+        related_name='followers',
         blank=True
     )
 

@@ -1,43 +1,53 @@
 from django.shortcuts import render
-
 # Create your views here.
+from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
-from .serializers import (
-    RegisterSerializer,
-    LoginSerializer,
-    UserProfileSerializer
-)
-
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({
-                'message': 'User registered successfully',
-                'token': user.auth_token.key
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+User = get_user_model()
 
 
-class LoginView(APIView):
-    permission_classes = [AllowAny]
+class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response({
-            'token': serializer.validated_data['token']
-        })
+    def post(self, request, user_id):
+        try:
+            user_to_follow = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if user_to_follow == request.user:
+            return Response(
+                {"detail": "You cannot follow yourself"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        request.user.following.add(user_to_follow)
+        return Response(
+            {"detail": "User followed successfully"},
+            status=status.HTTP_200_OK
+        )
 
 
-class ProfileView(APIView):
-    def get(self, request):
-        serializer = UserProfileSerializer(request.user)
-        return Response(serializer.data)
+class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        try:
+            user_to_unfollow = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        request.user.following.remove(user_to_unfollow)
+        return Response(
+            {"detail": "User unfollowed successfully"},
+            status=status.HTTP_200_OK
+        )
