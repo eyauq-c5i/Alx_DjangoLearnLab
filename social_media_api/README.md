@@ -66,3 +66,19 @@ Returns posts created by users that the authenticated user follows.
 Posts are ordered by most recent first.
 
 Authentication required for all endpoints.
+
+## Likes
+
+POST /api/posts/{id}/like/
+POST /api/posts/{id}/unlike/
+
+Users can like a post only once.
+
+## Notifications
+
+GET /api/notifications/
+
+Shows notifications for:
+- New followers
+- Likes on posts
+- Comments on posts
