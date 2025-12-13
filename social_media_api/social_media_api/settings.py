@@ -187,3 +187,6 @@ CSRF_COOKIE_SECURE = True
 # ======================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Port configuration for production platforms (Heroku, Render, etc.)
+PORT = int(os.environ.get("PORT", 8000))
